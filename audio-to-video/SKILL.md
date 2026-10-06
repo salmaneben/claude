@@ -60,7 +60,17 @@ python3 "$BASE/scripts/01b_transcribe.py" <work>    # التفريغ — بال�
 - **القص**: `python3 "$BASE/scripts/03_cut_zoom.py" <work>` ← يطلّع `voice.wav` (صوته للتسليم) و`cutz.mp4` (إطار ساكن لا يظهر).
 - ⛔ **تخطَّ** `12_face_guard.js` و`11_behind_text.js` وكل ما يخص الوجه — ما فيه وجه.
 
-**وضع «كابشن على خلفية حيّة»:** تخطَّ الخطوة ٧ (المشاهد) — كمّل من ٨ (الأصوات اختيارية) ثم ٩.
+**وضع «كابشن على خلفية حيّة»:** تخطَّ ٦٫٥ و٧ (المشاهد) — كمّل من ٨ (الأصوات اختيارية) ثم ٩.
+
+## الخطوة 6.5 — صور ومقاطع حقيقية حسب حاجة كل لحظة (من الأساس)
+بلا وجه، الصورة الحقيقية هي «الإنسان» بالمقطع — فهالخطوة هنا أهم منها بالأساس. نفس الأداة المشتركة:
+```bash
+python3 "$BASE/scripts/26_pexels.py" <work> plan       # كلامه بتوقيته + قالب pexels.json
+python3 "$BASE/scripts/26_pexels.py" <work> fetch      # ٣ مرشّحين لكل لحظة
+python3 "$BASE/scripts/26_pexels.py" <work> sheet      # ورقة مرشّحين — افحص قيوده
+python3 "$BASE/scripts/26_pexels.py" <work> pick <لحظة> <رقم> [--dur 3]   # ← <work>/assets/px_<لحظة>.*
+```
+التفاصيل والقواعد: الخطوة ٦٫٥ والقاعدة ١١٩ بالأساس. `kind` لكل لحظة حسب حاجتها (صورة · مقطع · الاثنين)، وتفضيله `stockMedia` يغلب.
 
 ## الخطوة 7 — المشاهد ← أهم خطوة وأكبر فرق
 **اقرأ `references/visual-scenes.md` كاملاً**، ومعه `<BASE>/references/scenes.md` ودليل أسلوبه و`<BASE>/references/rules.md` (مرة وحدة).
@@ -69,6 +79,8 @@ python3 "$BASE/scripts/01b_transcribe.py" <work>    # التفريغ — بال�
 bash "$BASE/scripts/04b_remotion.sh" <work> setup     # أول مرة (~500 ميقا) — قل له قبلها
 bash "$BASE/scripts/04b_remotion.sh" <work> studio    # http://localhost:3000 — يشوف المقطع حيّاً
 ```
+0. **الهوك أولاً** — `<BASE>/references/hook.md` و`python3 "$BASE/scripts/27_hook.py" <work> plan`: ٢–٣ صيغ يختار منها ← `hook.json` ← أول مشهد.
+   بلا وجه الهوك يشيل حمل أكبر: `visual` أو `number` أو `question` بحركة قوية (`behind` ممنوع — ما فيه شخص).
 1. اعرض عليه ٢–٣ «عوالم» للمقطع (`<BASE>/styles/IDEAS.md`) قبل ما تبني.
 2. اكتب المشاهد بـ`<work>/Scenes.tsx` بالصيغة اللي يشرحها المرجع (الفواحص تعتمد عليها).
 3. `python3 scripts/a3_stage.py <work>` — جدول النوافذ (**بدل** `18_stage_from_scenes.py` — ذاك يرجّع الإطار الساكن مكان الوجه).
@@ -81,9 +93,9 @@ bash "$BASE/scripts/04b_remotion.sh" <work> studio    # http://localhost:3000 �
 
 ## الخطوة 9 — الفحص والرندر
 ```bash
-python3 scripts/a4_preflight.py <work> --name "<اسم المقطع>"                 # قبل: الجدول · فراغ وجمود · المؤثرات · التكرار · التغطية
+python3 scripts/a4_preflight.py <work> --name "<اسم المقطع>"                 # قبل: الجدول · فراغ وجمود · المؤثرات · التكرار · التغطية · الهوك
 bash "$BASE/scripts/04b_remotion.sh" <work> render <work>/ad-final.mp4
-python3 scripts/a4_preflight.py <work> --name "<اسم المقطع>" --out <work>/ad-final.mp4   # بعد: الومضات · الصوت كما دخل · المدة
+python3 scripts/a4_preflight.py <work> --name "<اسم المقطع>" --out <work>/ad-final.mp4   # بعد: الومضات · الصوت كما دخل · الهوك بالصورة · المدة
 ```
 - ⛔ **لا تستعمل `22_preflight.py` من الأساس** — يشغّل 18 فيرجع الإطار الساكن، ويفحص وجهاً ونظرة ما هي موجودة.
 - **رسالة «⛔ اللون تغيّر» بعد الرندر متوقّعة هنا وتُتجاهل**: فاحص اللون (21) يقارن الناتج بالفيديو المصوّر، وهنا الإطار الساكن مخفي عمداً تحت الرسم. فاحص الصوت (20) هو اللي يهمّ — لازم ينجح.
@@ -97,9 +109,10 @@ python3 "$BASE/scripts/09_srt.py" <work> ad-master                              
 موسيقى بالخلفية: بس لو طلبها أو اختارها بأسئلة البداية (`<work>/bg-audio.mp3`). ولو صوته فيه موسيقى أصلاً، لا تضيف.
 
 ## التسليم
-نفس قواعد الأساس: أثناء المراجعة `<اسم المقطع>-نسخة<N>.mp4`، وبعد الاعتماد `<اسم المقطع>.mp4` + `.srt` + `.txt`.
+نفس قواعد الأساس: أثناء المراجعة `<اسم المقطع>-نسخة<N>.mp4`، وبعد الاعتماد `<اسم المقطع>.mp4` + `.srt` + `.txt`
++ **الغلاف** `<اسم المقطع>-غلاف.jpg` من `python3 "$BASE/scripts/27_hook.py" <work> cover <work>/ad-master.mp4` (اعرضه عليه).
 اعرض: المدة · كم انشال من السكتات · عدد المشاهد · العلو النهائي — واذكر إنك ما نشرت شي.
-بعد التسليم: `python3 "$BASE/scripts/14_ledger.py"` يحدّث سجل آلياته. **لا تحذف مجلد الشغل** — غالباً يطلب تعديلاً.
+بعد التسليم: `python3 "$BASE/scripts/14_ledger.py"` يحدّث سجل آلياته، و`python3 "$BASE/scripts/27_hook.py" <work> log --name "<اسم المقطع>"` يسجّل نمط الهوك. **لا تحذف مجلد الشغل** — غالباً يطلب تعديلاً.
 
 ## خريطة السكربتات
 | | يسوي شنو |
@@ -110,4 +123,6 @@ python3 "$BASE/scripts/09_srt.py" <work> ad-master                              
 | `scripts/a3_stage.py` | جدول النوافذ: الشاشة كلها للرسم (بديل 18) |
 | `scripts/a4_preflight.py` | الفواحص المناسبة لمقطع بلا وجه (بديل 22) |
 | `scripts/a5_sheet.sh` | ورقة لقطات من أي فيديو (رندر التجربة مثلاً) |
+| `<BASE>/scripts/26_pexels.py` | صور ومقاطع حقيقية حسب الحاجة — مشترك مع الأساس |
+| `<BASE>/scripts/27_hook.py` | الهوك وفاحصه وصورة الغلاف — مشترك مع الأساس |
 | كل الباقي | من `<BASE>/scripts` — خريطته بـ`SKILL.md` الأساس |
