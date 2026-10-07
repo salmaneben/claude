@@ -3,8 +3,8 @@
 """الفواحص كلها لمقطع صوتي — بديل 22_preflight.py بالأساس.
    python3 a4_preflight.py <work> [--name "<اسم المقطع>"] [--out <المسلَّم.mp4>] [--gap 4]
 
-قبل الرندر: a3_stage · 19 (فراغ وجمود) · 05b المؤثرات · 13 التكرار · 16 التغطية (حد أقسى: 4 ث)
-بعد الرندر (--out): 25 الومضات · 20 الصوت كما دخل · المدة
+قبل الرندر: a3_stage · 19 (فراغ وجمود) · 05b المؤثرات · 13 التكرار · 16 التغطية (حد أقسى: 4 ث) · 27 الهوك
+بعد الرندر (--out): 25 الومضات · 20 الصوت كما دخل · 27 الهوك بالصورة · المدة
 متخطّى عمداً (يخص الوجه أو الفيديو المصوّر): 12 الوجه · 21 اللون · 23 النظرة · 24 القطع · معدل البت.
 يخرج بالرمز 3 لو أي فاحص فشل."""
 import sys, os, subprocess, json
@@ -36,6 +36,8 @@ if MODE == "full":
     rows.append(run("19 فراغ · جمود", [sys.executable, os.path.join(K, "19_scene_audit.py"), W]))
     rows.append(run("13 تكرار الآليات", ["node", os.path.join(K, "13_repeat_check.js"), W, NAME]))
     rows.append(run(f"16 التغطية (≤{GAP} ث)", ["node", os.path.join(K, "16_coverage_check.js"), W, GAP]))
+    if not OUT:
+        rows.append(run("27 الهوك", [sys.executable, os.path.join(K, "27_hook.py"), W, "check", "--name", NAME]))
 else:
     print(f"الوضع: {MODE} — بلا مشاهد (كابشن فوق الخلفية الحيّة)")
 if HAS_SFX and os.path.exists(os.path.join(W, "sfx.json")):
@@ -43,6 +45,8 @@ if HAS_SFX and os.path.exists(os.path.join(W, "sfx.json")):
 
 if OUT:
     rows.append(run("25 ومضات بيضاء", [sys.executable, os.path.join(K, "25_flash_check.py"), W, OUT]))
+    if MODE == "full":
+        rows.append(run("27 الهوك بالصورة", [sys.executable, os.path.join(K, "27_hook.py"), W, "check", "--name", NAME, "--out", OUT]))
     if os.path.exists(os.path.join(W, "voice.wav")):
         rows.append(run("20 الصوت كما دخل", [sys.executable, os.path.join(K, "20_voice_check.py"), W, OUT]))
     d = lambda f: float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", f],
