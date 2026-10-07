@@ -1,4 +1,4 @@
-import {T, CAP, CAPMOVE} from './theme';
+import {T, CAP, CAPMOVE, DIR} from './theme';
 import {p, rgba, ease, back} from './util';
 import caps from './caps.json';
 
@@ -65,7 +65,7 @@ export const Captions: React.FC<{t:number}> = ({t}) => {
   return (
     <div style={{position:'absolute', left:0, right:0, bottom:1920-(CAPMOVE.find(m=>t>=m[0]&&t<m[1])?.[2] ?? CAP.bottom), display:'flex', justifyContent:'center',
       opacity:a, transform:`translateY(${dy}px) scale(${sc})`}}>
-      <div dir="rtl" style={{
+      <div dir={DIR} style={{
         maxWidth:MAXW + PADX*2,
         background: SLIM ? rgba(T.bg,0.52) : rgba(T.bg,0.96),
         border: SLIM ? 'none' : `2.5px solid ${rgba(T.ink,0.09)}`,
@@ -92,7 +92,7 @@ export const Captions: React.FC<{t:number}> = ({t}) => {
                   color: hot ? '#FFF' : (active ? T.acc : (SLIM ? '#FFFFFF' : T.ink))}}>
                   {hot && (
                     <span style={{position:'absolute', inset:'-11px -14px', background:T.acc, borderRadius:15,
-                      transform:`scaleX(${ease(grow)})`, transformOrigin:'right center', zIndex:-1}} />
+                      transform:`scaleX(${ease(grow)})`, transformOrigin: DIR === 'rtl' ? 'right center' : 'left center', zIndex:-1}} />
                   )}
                   {w.t}
                 </span>);

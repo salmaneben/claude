@@ -8,7 +8,8 @@ import {Scenes, VideoOverlay} from './Scenes';
 import {Outro} from './Outro';
 import {Guides} from './Guides';
 
-export const Ad: React.FC = () => {
+/** noCaptions: صورة الغلاف تُرسم بلا كرت الكابشن (27_hook.py cover يمرّرها بـ--props) */
+export const Ad: React.FC<{noCaptions?: boolean}> = ({noCaptions = false}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const t = frame / fps;
@@ -42,7 +43,7 @@ export const Ad: React.FC = () => {
       <Outro t={t} />
       <Badge t={t} />
       <Scenes t={t} />
-      <Captions t={t} />
+      {!noCaptions && <Captions t={t} />}
       {GUIDES && <Guides />}
     </AbsoluteFill>
   );

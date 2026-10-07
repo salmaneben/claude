@@ -4,5 +4,5 @@ import {DUR_F, FPS} from './theme';
 
 export const RemotionRoot: React.FC = () => (
   <Composition id="Ad" component={Ad} durationInFrames={DUR_F}
-    fps={FPS} width={1080} height={1920} />
+    fps={FPS} width={1080} height={1920} defaultProps={{noCaptions:false}} />
 );

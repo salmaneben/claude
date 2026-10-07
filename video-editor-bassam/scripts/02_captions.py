@@ -38,6 +38,7 @@ for i,seg in enumerate(tr["segments"]):
     cards.append({"s":round(cs,3),"e":round(ce,3),"w":o})
 for i in range(len(cards)-1):
     if cards[i]["e"]>cards[i+1]["s"]: cards[i]["e"]=round(cards[i+1]["s"]-0.02,3)
-json.dump({"total":round(acc,3),"cards":cards},open(os.path.join(W,"caps.json"),"w"),ensure_ascii=False,indent=1)
+# لغة الكلام من التفريغ — القالب يقلب اتجاه الكابشن منها (عربي يمين←يسار · غيره يسار←يمين)
+json.dump({"total":round(acc,3),"lang":tr.get("language","ar"),"cards":cards},open(os.path.join(W,"caps.json"),"w"),ensure_ascii=False,indent=1)
 print("كروت:",len(cards)," المدة:",round(acc,2))
 for c in cards: print(f"{c['s']:6.2f}-{c['e']:6.2f}  "+" ".join(x['t'] for x in c['w']))

@@ -50,3 +50,5 @@ export const RECTS = (P as any).rects || {};
 /** من أين يُقصّ وجهه داخل كرت مصغّر — من theme.json لا تخمين */
 export const FACE_ANCHOR: number = (P.theme as any).faceAnchor ?? 0.30;
 export const GUIDES = !!(P as any).guides;
+/** اتجاه الكابشن — من لغة الكلام (04b يكتبه بـproject.json). الافتراضي عربي */
+export const DIR: 'rtl' | 'ltr' = (P as any).dir === 'ltr' ? 'ltr' : 'rtl';

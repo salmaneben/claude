@@ -45,6 +45,8 @@ sfx   = rd("sfx.json", {})
 proj = {
   "theme": {k: theme.get(k) for k in ("bg","ink","acc","clay","mut","sand","sky","warm","cream","font","fontDisplay","fontLocal","handle","faceAnchor","captionSize","captionWeight","captionMaxW","captionBottom") if theme.get(k) is not None},
   "total": round(caps["total"], 3),
+  # اتجاه الكابشن من لغة الكلام: كان dir="rtl" محفوراً فطلعت الكلمات الإنجليزية مقلوبة الترتيب
+  "dir":   "rtl" if caps.get("lang", "ar") in ("ar", "fa", "ur", "he", "ps") else "ltr",
   "outro": float(sfx.get("outro", 0.0)),   # الافتراضي بلا كرت نهاية — المقطع يخلص على وجهه
   "sfx":   os.path.exists(os.path.join(W, "sfx.wav")),
   "stage": rd("stage.json", [{"s":0, "e":9999, "m":"FULL"}]),

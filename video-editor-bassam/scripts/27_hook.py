@@ -161,12 +161,37 @@ def cmd_cover(W):
             t = (lo + int(np.argmax(sc))) / FPS
     t = float(t)
     o = os.path.join(W, "cover.jpg")
-    r = subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{t:.3f}", "-i", video, "-frames:v", "1", "-q:v", "2", o],
-                       capture_output=True, text=True)
-    if r.returncode != 0 or not os.path.exists(o):
-        die(f"❌ ما قدرت أطلّع الغلاف: {r.stderr.strip()[-200:]}", 3)
-    print(f"✅ {o}  (عند {t:.2f} ث)")
+    # ⛔ الإطار من الفيديو المسلَّم فيه كرت الكابشن (نص جملة مقطوعة تحت الغلاف) — فالأصل نرسم نفس الإطار
+    #    من مشروع ريموشن بلا كابشن. وبدون مشروع جاهز نرجع لإطار الفيديو وننبّه.
+    clean = still_no_captions(W, t, o)
+    if not clean:
+        r = subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{t:.3f}", "-i", video, "-frames:v", "1", "-q:v", "2", o],
+                           capture_output=True, text=True)
+        if r.returncode != 0 or not os.path.exists(o):
+            die(f"❌ ما قدرت أطلّع الغلاف: {r.stderr.strip()[-200:]}", 3)
+        print("⚠️ الغلاف من الفيديو نفسه وفيه كرت الكابشن — مشروع ريموشن مو جاهز بـ<work>/remotion")
+    print(f"✅ {o}  (عند {t:.2f} ث{' · بلا كابشن' if clean else ''})")
     print("   الشبكة بحسابه تقصّ الغلاف لـ3:4 — الكلام المهم لازم بين y 240 و1680. اعرضه عليه.")
+
+
+def still_no_captions(W, t, out):
+    """إطار واحد من مشروع ريموشن بلا كابشن. يرجّع True لو نجح.
+    REMOTION_BROWSER_EXECUTABLE (اختياري) = متصفح محلي لو ريموشن ما يقدر ينزّل متصفحه."""
+    R = os.path.join(W, "remotion")
+    if not os.path.isdir(os.path.join(R, "node_modules")):
+        return False
+    png = os.path.join(W, ".cover.png")
+    cmd = ["npx", "remotion", "still", "Ad", png, f"--frame={round(t * FPS)}", '--props={"noCaptions":true}', "--log=error"]
+    be = os.environ.get("REMOTION_BROWSER_EXECUTABLE")
+    if be:
+        cmd.append(f"--browser-executable={be}")
+    r = subprocess.run(cmd, cwd=R, capture_output=True, text=True)
+    if r.returncode != 0 or not os.path.exists(png):
+        print(f"⚠️ رسم الغلاف من ريموشن فشل: {(r.stderr or r.stdout).strip()[-200:]}")
+        return False
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", png, "-q:v", "2", out], capture_output=True)
+    os.remove(png)
+    return os.path.exists(out)
 
 
 def cmd_log(W):
